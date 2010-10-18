@@ -1,0 +1,10 @@
+*/_ReSharper.*/
+*.user
+obj/
+bin/
+!tools/*/bin/
+output/
+*.suo
+TestResult.xml
+Wofl.VisualState.xml
+wofl.sln.cache
