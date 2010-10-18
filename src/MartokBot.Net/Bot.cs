@@ -15,6 +15,11 @@ namespace MartokBot.Net
 			_client = new IrcClient();
 		}
 
+		public void AddPlugin(IPlugin plugin)
+		{
+			plugin.InitPlugin(this);
+		}
+
 		public void Connect(string ircHostname, string nickname, string username, string realname)
 		{
 			BlockingConnect(ircHostname, nickname, username, realname);

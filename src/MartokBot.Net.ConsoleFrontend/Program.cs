@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MartokBot.Net.ConsoleFrontend
 {
@@ -10,8 +8,7 @@ namespace MartokBot.Net.ConsoleFrontend
 		{
 			using (var bot = new Bot())
 			{
-				var trivia = new TriviaPlugin(bot);
-				trivia.Init();
+				bot.AddPlugin(new TriviaPlugin());
 
 				bot.Connect("irc.quakenet.org", "ErnestoRules", "ErnestoRules", "ErnestoRules");
 				Console.WriteLine("Connected...");

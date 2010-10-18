@@ -4,30 +4,30 @@ using System.IO;
 using System.Linq;
 using IrcDotNet;
 
-namespace MartokBot.Net.ConsoleFrontend
+namespace MartokBot.Net
 {
-	public class TriviaPlugin
+	public class TriviaPlugin : IPlugin
 	{
-		private readonly Bot _bot;
+		private Bot _bot;
 		private readonly List<Question> _questions;
 		private readonly List<Score> _scores;
 		private readonly Random _random;
 
 		private Question _currentQuestion;
 
-		public TriviaPlugin(Bot bot)
+		public TriviaPlugin()
 		{
 			_questions = new List<Question>();
 			_scores = new List<Score>();
 
-			_bot = bot;
-			bot.Message += MessageReceived;
-
 			_random = new Random();
 		}
 
-		public void Init()
+		public void InitPlugin(Bot bot)
 		{
+			_bot = bot;
+			bot.Message += MessageReceived;
+
 			using (var sr = new StreamReader(@"c:\Users\Administrator\Documents\source\MartokBot.Net\questions.txt"))
 			{
 				string line;
