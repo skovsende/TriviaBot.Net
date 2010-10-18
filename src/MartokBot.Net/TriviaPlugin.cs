@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using IrcDotNet;
 
 namespace MartokBot.Net
@@ -58,6 +59,20 @@ namespace MartokBot.Net
 				var question = _questions[_random.Next(0, _questions.Count)];
 				_bot.Say(channel.Name, question.Text);
 				_currentQuestion = question;
+
+				Action<Question> delayedAction =
+					delegate(Question currentQuestion)
+					{
+						Thread.Sleep(30000);
+
+						if (_currentQuestion == currentQuestion)
+						{
+							_bot.Say(channel.Name, "Noone knew the answer - point for me!");
+							_currentQuestion = null;
+						}
+					};
+
+				delayedAction.BeginInvoke(_currentQuestion, null, null);
 			}
 
 			if(_currentQuestion != null)
