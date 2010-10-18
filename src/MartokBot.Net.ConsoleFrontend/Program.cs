@@ -10,7 +10,7 @@ namespace MartokBot.Net.ConsoleFrontend
 			{
 				bot.AddPlugin(new TriviaPlugin());
 
-				bot.Connect("irc.quakenet.org", "ErnestoRules", "ErnestoRules", "ErnestoRules");
+				bot.Connect("irc.quakenet.org", "GinnTrivia", "GinnTrivia", "GinnTrivia");
 				Console.WriteLine("Connected...");
 
 				bot.Join("#ginnunga");

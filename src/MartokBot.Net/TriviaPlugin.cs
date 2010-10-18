@@ -29,7 +29,7 @@ namespace MartokBot.Net
 			_bot = bot;
 			bot.Message += MessageReceived;
 
-			using (var sr = new StreamReader(@"c:\Users\Administrator\Documents\source\MartokBot.Net\questions.txt"))
+			using (var sr = new StreamReader("questions.txt"))
 			{
 				string line;
 				while ((line = sr.ReadLine()) != null)
