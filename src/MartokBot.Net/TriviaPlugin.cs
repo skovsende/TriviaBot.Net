@@ -47,44 +47,64 @@ namespace MartokBot.Net
 		private void MessageReceived(IrcChannel channel, string source, string text)
 		{
 			if(text.StartsWith("!scores"))
+				ShowScores(channel);
+
+			if(text.StartsWith("!trivia") && _currentQuestion == null)
+				StartQuestion(channel);
+
+			if(_currentQuestion != null)
+				CheckForCorrectAnswer(text, channel, source);
+		}
+
+		private void ShowScores(IrcChannel channel)
+		{
+			foreach(var score in _scores.OrderBy(s => s.Points).Reverse().Take(5))
 			{
-				foreach(var score in _scores.OrderBy(s => s.Points).Reverse().Take(5))
+				_bot.Say(channel.Name, string.Format("{0}: {1} points", score.Nickname, score.Points));
+			}
+		}
+
+		private void CheckForCorrectAnswer(string text, IrcChannel channel, string source)
+		{
+			if (_currentQuestion.Answers.Contains(text.ToLower()))
+			{
+				_bot.Say(channel.Name, source + " rocks!");
+				_currentQuestion = null;
+
+				AddToScores(source);
+				
+				if(_scores.Sum(x => x.Points) == 10)
 				{
-					_bot.Say(channel.Name, string.Format("{0}: {1}", score.Nickname, score.Points));
+					_bot.Say(channel.Name, _scores.OrderBy(s => s.Points).Reverse().First().Nickname + " is the winner");
+					ShowScores(channel);
+					_scores.Clear();
+				}
+				else
+				{
+					StartQuestion(channel);
 				}
 			}
+		}
 
-			if(text.StartsWith("!q") && _currentQuestion == null)
-			{
-				var question = _questions[_random.Next(0, _questions.Count)];
-				_bot.Say(channel.Name, question.Text);
-				_currentQuestion = question;
+		private void StartQuestion(IrcChannel channel)
+		{
+			var question = _questions[_random.Next(0, _questions.Count)];
+			_bot.Say(channel.Name, question.Text);
+			_currentQuestion = question;
 
-				Action<Question> delayedAction =
-					delegate(Question currentQuestion)
+			Action<Question, IrcChannel> delayedAction =
+				delegate(Question currentQuestion, IrcChannel c)
 					{
 						Thread.Sleep(30000);
 
 						if (_currentQuestion == currentQuestion)
 						{
 							_bot.Say(channel.Name, "Noone knew the answer - point for me!");
-							_currentQuestion = null;
+							StartQuestion(c);
 						}
 					};
 
-				delayedAction.BeginInvoke(_currentQuestion, null, null);
-			}
-
-			if(_currentQuestion != null)
-			{
-				if (_currentQuestion.Answers.Contains(text.ToLower()))
-				{
-					_bot.Say(channel.Name, source + " rocks!");
-					_currentQuestion = null;
-
-					AddToScores(source);
-				}
-			}
+			delayedAction.BeginInvoke(_currentQuestion, channel, null, null);
 		}
 
 		private void AddToScores(string nickname)
